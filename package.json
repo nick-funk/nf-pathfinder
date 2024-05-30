@@ -1,11 +1,13 @@
 {
-  "name": "pathfinder",
+  "name": "nf-pathfinder",
   "version": "1.0.0",
   "description": "An A* pathfinding lib written in Typescript.",
-  "main": "index.js",
+  "repository": "https://github.com/nick-funk/nf-pathfinder",
+  "main": "dist/index.js",
   "scripts": {
     "build": "tsc --project tsconfig.json",
-    "start": "npm run build && node ./dist/main.js"
+    "start": "npm run build && node ./dist/main.js",
+    "test": "npm run start"
   },
   "keywords": [],
   "author": "",
