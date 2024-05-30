@@ -1,0 +1,16 @@
+{
+  "name": "pathfinder",
+  "version": "1.0.0",
+  "description": "An A* pathfinding lib written in Typescript.",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "start": "npm run build && node ./dist/main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
