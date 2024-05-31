@@ -1,5 +1,6 @@
 interface GraphOptions {
   diagonal: boolean;
+  closest?: boolean;
 }
 
 export const cleanNode = (node: GridNode) => {
@@ -17,11 +18,13 @@ export class Grid {
   public grid: GridNode[][];
 
   public dirtyNodes: GridNode[];
+  private closest: boolean | undefined;
 
   constructor(gridIn: number[][], options?: GraphOptions) {
     this.nodes = [];
     this.dirtyNodes = [];
     this.diagonal = options ? options.diagonal : false;
+    this.closest = options?.closest;
     this.grid = [];
 
     for (let y = 0; y < gridIn.length; y++) {

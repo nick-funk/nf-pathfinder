@@ -1,4 +1,4 @@
-import { search } from "./aStar";
+import { manhattan, search } from "./aStar";
 import { Grid } from "./grid";
 import { debugPath } from "./debug";
 
@@ -27,7 +27,10 @@ const run = () => {
   const start = graph.grid[startY][startX];
   const end = graph.grid[endY][endX];
 
-  const nodes = search(graph, start, end);
+  const nodes = search(graph, start, end, {
+    closest: true,
+    heuristic: manhattan,
+  });
   const endTime = Date.now();
 
   console.log(debugPath(graph, nodes, startX, startY, endX, endY));

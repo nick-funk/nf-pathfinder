@@ -1,4 +1,4 @@
-import { search } from "./aStar";
+import { Pos, manhattan, search } from "./aStar";
 import { Grid } from "./grid";
 
 export * from "./aStar";
@@ -23,14 +23,16 @@ export const computePath = (
   end: Vec2,
   allowDiagonalMovement = true,
   swapCoords = true,
-  scaleCoords: Vec2 = { x: 1, y: 1 }
+  scaleCoords: Vec2 = { x: 1, y: 1 },
+  closest = true,
+  heuristic: (pos0: Pos, pos1: Pos) => number = manhattan
 ): NodeResult[] => {
   const graph = new Grid(grid, { diagonal: allowDiagonalMovement });
 
   const s = graph.grid[start.x][start.y];
   const e = graph.grid[end.x][end.y];
 
-  const path = search(graph, s, e);
+  const path = search(graph, s, e, { closest, heuristic });
 
   const mappedCoords = swapCoords
     ? path.map((p) => {

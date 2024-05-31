@@ -1,7 +1,7 @@
 import { BinaryHeap } from "./BinaryHeap";
 import { GridNode, Grid } from "./grid";
 
-interface Pos {
+export interface Pos {
   x: number;
   y: number;
 }
