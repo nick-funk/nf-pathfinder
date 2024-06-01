@@ -1,6 +1,6 @@
 {
   "name": "nf-pathfinder",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "An A* pathfinding lib written in Typescript.",
   "repository": "https://github.com/nick-funk/nf-pathfinder",
   "main": "dist/index.js",
