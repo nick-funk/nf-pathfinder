@@ -13,56 +13,24 @@ export class GridPos {
   }
 }
 
-interface NodeProps {
+interface Node {
   x: number;
   y: number;
-  topLeft: boolean;
-  top: boolean;
-  topRight: boolean;
-  right: boolean;
-  bottomRight: boolean;
-  bottom: boolean;
-  bottomLeft: boolean;
-  left: boolean;
+
+  topLeft?: Node;
+  top?: Node;
+  topRight?: Node;
+  right?: Node;
+  bottomRight?: Node;
+  bottom?: Node;
+  bottomLeft?: Node;
+  left?: Node;
 }
 
-export class Node {
-  public readonly x: number;
-  public readonly y: number;
-
-  public topLeft: boolean;
-  public top: boolean;
-  public topRight: boolean;
-  public right: boolean;
-  public bottomRight: boolean;
-  public bottom: boolean;
-  public bottomLeft: boolean;
-  public left: boolean;
-
-  constructor({
-    x,
-    y,
-    topLeft,
-    top,
-    topRight,
-    right,
-    bottomRight,
-    bottom,
-    bottomLeft,
-    left,
-  }: NodeProps) {
-    this.x = x;
-    this.y = y;
-
-    this.topLeft = topLeft;
-    this.top = top;
-    this.topRight = topRight;
-    this.right = right;
-    this.bottomRight = bottomRight;
-    this.bottom = bottom;
-    this.bottomLeft = bottomLeft;
-    this.left = left;
-  }
+interface TraversalValue {
+  x: number;
+  y: number;
+  value: number;
 }
 
 export class Grid {
@@ -90,7 +58,14 @@ export class Grid {
 
     for (let y = 0; y < height; y++) {
       const row: Node[] = [];
+      for (let x = 0; x < width; x++) {
+        row.push({ x, y });
+      }
 
+      grid.push(row);
+    }
+
+    for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
         const topLeft = this.getValueFromTraversal(
           x - 1,
@@ -99,7 +74,13 @@ export class Grid {
           width,
           height
         );
-        const top = this.getValueFromTraversal(x, y - 1, this.rawTraversal, width, height);
+        const top = this.getValueFromTraversal(
+          x,
+          y - 1,
+          this.rawTraversal,
+          width,
+          height
+        );
         const topRight = this.getValueFromTraversal(
           x + 1,
           y - 1,
@@ -107,7 +88,13 @@ export class Grid {
           width,
           height
         );
-        const right = this.getValueFromTraversal(x + 1, y, this.rawTraversal, width, height);
+        const right = this.getValueFromTraversal(
+          x + 1,
+          y,
+          this.rawTraversal,
+          width,
+          height
+        );
         const bottomRight = this.getValueFromTraversal(
           x + 1,
           y + 1,
@@ -129,28 +116,38 @@ export class Grid {
           width,
           height
         );
-        const left = this.getValueFromTraversal(x - 1, y, this.rawTraversal, width, height);
-
-        const node = new Node({
-          x,
+        const left = this.getValueFromTraversal(
+          x - 1,
           y,
-          topLeft: topLeft === Traversal.GROUND,
-          top: top === Traversal.GROUND,
-          topRight: topRight === Traversal.GROUND,
-          right: right === Traversal.GROUND,
-          bottomRight: bottomRight === Traversal.GROUND,
-          bottom: bottom === Traversal.GROUND,
-          bottomLeft: bottomLeft === Traversal.GROUND,
-          left: left === Traversal.GROUND,
-        });
+          this.rawTraversal,
+          width,
+          height
+        );
 
-        row.push(node);
+        const node = grid[y][x];
+        node.topLeft = this.convertTraversalToNode(grid, topLeft);
+        node.top = this.convertTraversalToNode(grid, top);
+        node.topRight = this.convertTraversalToNode(grid, topRight);
+        node.right = this.convertTraversalToNode(grid, right);
+        node.bottomRight = this.convertTraversalToNode(grid, bottomRight);
+        node.bottom = this.convertTraversalToNode(grid, bottom);
+        node.bottomLeft = this.convertTraversalToNode(grid, bottomLeft);
+        node.left = this.convertTraversalToNode(grid, left);
       }
-
-      grid.push(row);
     }
 
     return grid;
+  }
+
+  private convertTraversalToNode(
+    grid: Node[][],
+    traversalValue: TraversalValue | null
+  ) {
+    if (!traversalValue || traversalValue.value !== Traversal.GROUND) {
+      return undefined;
+    }
+
+    return grid[traversalValue.y][traversalValue.x];
   }
 
   public getNode(x: number, y: number): Node | null {
@@ -167,12 +164,12 @@ export class Grid {
     traversal: number[][],
     width: number,
     height: number
-  ): number | null {
+  ): TraversalValue | null {
     if (x < 0 || x >= width || y < 0 || y >= height) {
       return null;
     }
 
-    return traversal[y][x];
+    return { value: traversal[y][x], x, y };
   }
 
   public cloneTraversal(traversal: number[][]) {

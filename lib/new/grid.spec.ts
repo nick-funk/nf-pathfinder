@@ -34,41 +34,41 @@ it("grid nodes are calculated correctly", () => {
   const traversal = [
     [0, 1, 0],
     [0, 0, 0],
-    [1, 0, 0]
+    [1, 0, 0],
   ];
 
   const grid = new Grid(traversal);
 
   const centreNode = grid.getNode(1, 1);
   expect(centreNode).toBeDefined();
-  expect(centreNode?.topLeft).toEqual(true);
-  expect(centreNode?.top).toEqual(false);
-  expect(centreNode?.topRight).toEqual(true);
-  expect(centreNode?.right).toEqual(true);
-  expect(centreNode?.bottomRight).toEqual(true);
-  expect(centreNode?.bottom).toEqual(true);
-  expect(centreNode?.bottomLeft).toEqual(false);
-  expect(centreNode?.left).toEqual(true);
+  expect(centreNode?.topLeft).toBeDefined();
+  expect(centreNode?.top).toBeUndefined();
+  expect(centreNode?.topRight).toBeDefined();
+  expect(centreNode?.right).toBeDefined();
+  expect(centreNode?.bottomRight).toBeDefined();
+  expect(centreNode?.bottom).toBeDefined();
+  expect(centreNode?.bottomLeft).toBeUndefined();
+  expect(centreNode?.left).toBeDefined();
 
   const topLeftNode = grid.getNode(0, 0);
   expect(topLeftNode).toBeDefined();
-  expect(topLeftNode?.topLeft).toEqual(false);
-  expect(topLeftNode?.top).toEqual(false);
-  expect(topLeftNode?.topRight).toEqual(false);
-  expect(topLeftNode?.right).toEqual(false);
-  expect(topLeftNode?.bottomRight).toEqual(true);
-  expect(topLeftNode?.bottom).toEqual(true);
-  expect(topLeftNode?.bottomLeft).toEqual(false);
-  expect(topLeftNode?.left).toEqual(false);
+  expect(topLeftNode?.topLeft).toBeUndefined();
+  expect(topLeftNode?.top).toBeUndefined();
+  expect(topLeftNode?.topRight).toBeUndefined();
+  expect(topLeftNode?.right).toBeUndefined();
+  expect(topLeftNode?.bottomRight).toBeDefined();
+  expect(topLeftNode?.bottom).toBeDefined();
+  expect(topLeftNode?.bottomLeft).toBeUndefined();
+  expect(topLeftNode?.left).toBeUndefined();
 
   const topRightNode = grid.getNode(2, 0);
   expect(topRightNode).toBeDefined();
-  expect(topRightNode?.topLeft).toEqual(false);
-  expect(topRightNode?.top).toEqual(false);
-  expect(topRightNode?.topRight).toEqual(false);
-  expect(topRightNode?.right).toEqual(false);
-  expect(topRightNode?.bottomRight).toEqual(false);
-  expect(topRightNode?.bottom).toEqual(true);
-  expect(topRightNode?.bottomLeft).toEqual(true);
-  expect(topRightNode?.left).toEqual(false);
+  expect(topRightNode?.topLeft).toBeUndefined();
+  expect(topRightNode?.top).toBeUndefined();
+  expect(topRightNode?.topRight).toBeUndefined();
+  expect(topRightNode?.right).toBeUndefined();
+  expect(topRightNode?.bottomRight).toBeUndefined();
+  expect(topRightNode?.bottom).toBeDefined();
+  expect(topRightNode?.bottomLeft).toBeDefined();
+  expect(topRightNode?.left).toBeUndefined();
 });
