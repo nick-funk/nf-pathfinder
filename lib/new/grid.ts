@@ -16,6 +16,7 @@ export class GridPos {
 interface Node {
   x: number;
   y: number;
+  value: Traversal;
 
   topLeft?: Node;
   top?: Node;
@@ -25,6 +26,8 @@ interface Node {
   bottom?: Node;
   bottomLeft?: Node;
   left?: Node;
+
+  neighbours: Node[];
 }
 
 interface TraversalValue {
@@ -59,7 +62,7 @@ export class Grid {
     for (let y = 0; y < height; y++) {
       const row: Node[] = [];
       for (let x = 0; x < width; x++) {
-        row.push({ x, y });
+        row.push({ x, y, value: this.rawTraversal[y][x], neighbours: [] });
       }
 
       grid.push(row);
@@ -133,10 +136,33 @@ export class Grid {
         node.bottom = this.convertTraversalToNode(grid, bottom);
         node.bottomLeft = this.convertTraversalToNode(grid, bottomLeft);
         node.left = this.convertTraversalToNode(grid, left);
+
+        const neighbours: Node[] = [];
+        this.addNeighbourIfDefined(neighbours, node.topLeft);
+        this.addNeighbourIfDefined(neighbours, node.top);
+        this.addNeighbourIfDefined(neighbours, node.topRight);
+        this.addNeighbourIfDefined(neighbours, node.right);
+        this.addNeighbourIfDefined(neighbours, node.bottomRight);
+        this.addNeighbourIfDefined(neighbours, node.bottom);
+        this.addNeighbourIfDefined(neighbours, node.bottomLeft);
+        this.addNeighbourIfDefined(neighbours, node.left);
+
+        node.neighbours = neighbours;
       }
     }
 
     return grid;
+  }
+
+  private addNeighbourIfDefined(
+    neighbours: Node[],
+    node: Node | undefined | null
+  ) {
+    if (!node) {
+      return;
+    }
+
+    neighbours.push(node);
   }
 
   private convertTraversalToNode(
