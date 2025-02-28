@@ -1,3 +1,5 @@
+import { TreeNode } from "./tree";
+
 export enum Traversal {
   GROUND = 0,
   WALL = 1,
@@ -10,6 +12,10 @@ export class GridPos {
   constructor(x: number, y: number) {
     this.x = x;
     this.y = y;
+  }
+
+  public toString(): string {
+    return `${this.x}:${this.y}`;
   }
 }
 
@@ -28,6 +34,8 @@ interface Node {
   left?: Node;
 
   neighbours: Node[];
+
+  visited?: boolean;
 }
 
 interface TraversalValue {
@@ -70,6 +78,11 @@ export class Grid {
 
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
+        const node = grid[y][x];
+        if (node.value !== Traversal.GROUND) {
+          continue;
+        }
+
         const topLeft = this.getValueFromTraversal(
           x - 1,
           y - 1,
@@ -127,17 +140,17 @@ export class Grid {
           height
         );
 
-        const node = grid[y][x];
-        node.topLeft = this.convertTraversalToNode(grid, topLeft);
-        node.top = this.convertTraversalToNode(grid, top);
-        node.topRight = this.convertTraversalToNode(grid, topRight);
-        node.right = this.convertTraversalToNode(grid, right);
-        node.bottomRight = this.convertTraversalToNode(grid, bottomRight);
-        node.bottom = this.convertTraversalToNode(grid, bottom);
-        node.bottomLeft = this.convertTraversalToNode(grid, bottomLeft);
-        node.left = this.convertTraversalToNode(grid, left);
+        node.topLeft = this.convertTraversalToNeighbourNode(grid, topLeft);
+        node.top = this.convertTraversalToNeighbourNode(grid, top);
+        node.topRight = this.convertTraversalToNeighbourNode(grid, topRight);
+        node.right = this.convertTraversalToNeighbourNode(grid, right);
+        node.bottomRight = this.convertTraversalToNeighbourNode(grid, bottomRight);
+        node.bottom = this.convertTraversalToNeighbourNode(grid, bottom);
+        node.bottomLeft = this.convertTraversalToNeighbourNode(grid, bottomLeft);
+        node.left = this.convertTraversalToNeighbourNode(grid, left);
 
         const neighbours: Node[] = [];
+
         this.addNeighbourIfDefined(neighbours, node.topLeft);
         this.addNeighbourIfDefined(neighbours, node.top);
         this.addNeighbourIfDefined(neighbours, node.topRight);
@@ -147,7 +160,7 @@ export class Grid {
         this.addNeighbourIfDefined(neighbours, node.bottomLeft);
         this.addNeighbourIfDefined(neighbours, node.left);
 
-        node.neighbours = neighbours;
+        node.neighbours = Array.from(neighbours);
       }
     }
 
@@ -165,7 +178,7 @@ export class Grid {
     neighbours.push(node);
   }
 
-  private convertTraversalToNode(
+  private convertTraversalToNeighbourNode(
     grid: Node[][],
     traversalValue: TraversalValue | null
   ) {
@@ -184,7 +197,7 @@ export class Grid {
     return this.grid[y][x];
   }
 
-  public getValueFromTraversal(
+  public getNodeFromTraversal(
     x: number,
     y: number,
     traversal: number[][],
@@ -196,6 +209,25 @@ export class Grid {
     }
 
     return { value: traversal[y][x], x, y };
+  }
+
+  public getValueFromTraversal(
+    x: number,
+    y: number,
+    traversal: number[][],
+    width: number,
+    height: number
+  ): TraversalValue | null {
+    if (x < 0 || x >= width || y < 0 || y >= height) {
+      return null;
+    }
+
+    const value = traversal[y][x];
+    if (value !== Traversal.GROUND) {
+      return null;
+    }
+
+    return { value, x, y };
   }
 
   public cloneTraversal(traversal: number[][]) {
@@ -234,12 +266,69 @@ export class Grid {
     );
   }
 
-  public traverse(start: GridPos, end: GridPos) {
+  public traverse(start: GridPos, end: GridPos): GridPos[] {
     if (!this.positionIsValid(start)) {
       throw new Error(`(${start.x}, ${start.y}) is out of bounds of grid`);
     }
     if (!this.positionIsValid(end)) {
       throw new Error(`(${end.x}, ${end.y}) is out of bounds of grid`);
     }
+
+    const s = this.getNode(start.x, start.y);
+    const e = this.getNode(end.x, end.y);
+
+    if (!s || !e) {
+      return [];
+    }
+
+    const root = new TreeNode<Node>(s);
+
+    this.dfsTraverse(root, e);
+    const path: Node[] = [];
+    this.computePath(root, path);
+
+    // console.log(path.map((n) => `${n.x}:${n.y}`));
+
+    return [];
+  }
+
+  private computePath(node: TreeNode<Node>, path: Node[]) {
+    if (!node.marked) {
+      return [];
+    }
+
+    path.push(node.value);
+
+    for (const b of node.branches) {
+      if (b.marked) {
+        this.computePath(b, path);
+        break;
+      }
+    }
+  }
+
+  private dfsTraverse(current: TreeNode<Node>, target: Node): boolean {
+    current.value.visited = true;
+
+    if (current.value.x === target.x && current.value.y === target.y) {
+      console.log("found it!");
+      current.marked = true;
+      return true;
+    }
+
+    for (const n of current.value.neighbours) {
+      if (!n.visited) {
+        const tn = new TreeNode<Node>(n);
+        current.addBranch(tn);
+
+        const result = this.dfsTraverse(tn, target);
+        if (result) {
+          current.marked = true;
+          return result;
+        }
+      }
+    }
+
+    return false;
   }
 }
